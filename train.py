@@ -137,7 +137,7 @@ def fit(model, train_iter, eval_iter, num_train_optimization_steps, label_list, 
             train_accuracy.append(train_acc.item())
 
             if args.do_eval:
-                eval_loss, eval_acc, eval_f1 = eval(model, eval_iter, device, args)
+                eval_loss, eval_acc, eval_f1 = eval(model, eval_iter, device, label_map, args)
                 eval_losses.append(eval_loss)
                 eval_accuracy.append(eval_acc)
 
@@ -166,13 +166,14 @@ def fit(model, train_iter, eval_iter, num_train_optimization_steps, label_list, 
         logger.info("  Num examples = %d", len(eval_iter))
         logger.info("  Batch size = %d", args.eval_batch_size)
 
-        eval(model, eval_iter, device, args, True)
+        eval(model, eval_iter, device, label_map, args, True)
 
 
-def eval(model, eval_iter_data, device, args, is_report=False):
+def eval(model, eval_iter_data, device, label_map, args, is_report=False):
 
     model.eval()
     y_true, y_prediction = [], []
+    label_true, label_prediction = [], []
     eval_loss, eval_acc = 0, 0
     eval_count = 0
     for step,batch in enumerate(tqdm(eval_iter_data, desc="Evaluation")):
@@ -186,17 +187,19 @@ def eval(model, eval_iter_data, device, args, is_report=False):
         eval_count += 1
         predicts = model.predict(bert_out, label_mask)
         y_prediction.append(predicts)
+        label_prediction.append(id_to_label(predicts, label_map))
 
         label_ids = label_ids.view(1, -1)
         label_ids = label_ids[label_ids != -1]
         y_true.append(label_ids)
+        label_true.append(id_to_label(label_ids, label_map))
 
     eval_predicted = torch.cat(y_prediction, dim=0).cpu()
     eval_labeled = torch.cat(y_true, dim=0).cpu()
     eval_loss = eval_loss.item() / eval_count
     eval_acc, eval_f1 = acc_f1(eval_predicted, eval_labeled)
     if is_report:
-        report = classification_report(y_true, y_prediction, digits=4)
+        report = classification_report(label_true, label_prediction, digits=4)
         logger.info("\n%s", report)
         output_eval_file = os.path.join(args.output_dir, "eval_results.txt")
         with open(output_eval_file, "w") as writer:
@@ -205,3 +208,10 @@ def eval(model, eval_iter_data, device, args, is_report=False):
             writer.write(report)
 
     return eval_loss, eval_acc, eval_f1
+
+def id_to_label(label_ids, label_map):
+    res = []
+    label_ids = label_ids.numpy()
+    for i in label_ids:
+        res.append(label_map[i])
+    return res
