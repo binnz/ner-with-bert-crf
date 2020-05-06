@@ -7,7 +7,7 @@ from utils.logger import init_logger
 from tqdm import tqdm, trange
 from utils.utils import acc_f1, loss_acc_plot
 from seqeval.metrics import classification_report
-from pytorch_transformers import (AdamW, WarmupLinearSchedule)
+from transformers import (AdamW, get_linear_schedule_with_warmup)
 
 logger = init_logger(__name__, os.getcwd())
 
@@ -60,9 +60,8 @@ def fit(model, train_iter, eval_iter, num_train_optimization_steps, label_list, 
         optimizer_grouped_parameters,
         lr=args.learning_rate,
         eps=args.adam_epsilon)
-    scheduler = WarmupLinearSchedule(
-        optimizer,
-        warmup_steps=warmup_steps, t_total=num_train_optimization_steps)
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=num_train_optimization_steps)
+
     if args.fp16:
         try:
             from apex import amp
