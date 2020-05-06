@@ -31,6 +31,8 @@ class BertNer(BertPreTrainedModel):
                 if valid_ids[i][j].item() == 1:
                     jj += 1
                     valid_output[i][jj] = sequence_output[i][j]
+        device = sequence_output.device
+        valid_output.to(device)
         sequence_output = self.dropout(valid_output)
         return self.classifier(sequence_output)
 
