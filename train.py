@@ -211,7 +211,7 @@ def eval(model, eval_iter_data, device, label_map, args, is_report=False):
 
 def id_to_label(label_ids, label_map):
     res = []
-    label_ids = label_ids.numpy()
+    label_ids = label_ids.cpu().numpy()
     for i in label_ids:
         res.append(label_map[i])
     return res
