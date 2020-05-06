@@ -166,7 +166,7 @@ def fit(model, train_iter, eval_iter, num_train_optimization_steps, label_list, 
         logger.info("  Num examples = %d", len(eval_iter))
         logger.info("  Batch size = %d", args.eval_batch_size)
 
-        eval(model, eval_iter, label_map, device, args, True)
+        eval(model, eval_iter, device, args, True)
 
 
 def eval(model, eval_iter_data, device, args, is_report=False):
