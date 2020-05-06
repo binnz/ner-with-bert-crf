@@ -31,16 +31,9 @@ class BertNer(BertPreTrainedModel):
                 if valid_ids[i][j].item() == 1:
                     jj += 1
                     valid_output[i][jj] = sequence_output[i][j]
-        print('********************')
-        print('valid_out', valid_output.device)
-        print('seq',sequence_output)
         device = sequence_output.device
-        print(device)
-        valid_output.to(device)
-        print(valid_output.device)
+        valid_output = valid_output.to(device)
         sequence_output = self.dropout(valid_output)
-        print(sequence_output.device)
-        # print(self.classifier.device)
         return self.classifier(sequence_output)
 
     def loss_fn(self, bert_out, label_ids, label_mask):
