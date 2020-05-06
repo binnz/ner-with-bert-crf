@@ -1,0 +1,13 @@
+lib/
+bin/
+include/
+.vscode
+__pycache__
+cache*
+dev-data*
+all.log
+error.log
+outbase.png
+.idea
+.idea/*
+outbase/*
