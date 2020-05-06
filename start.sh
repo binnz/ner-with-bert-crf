@@ -10,6 +10,5 @@ python main.py \
 --num_train_epochs=50 \
 --do_train \
 --do_eval \
---use_crf \
 --warmup_proportion=0.1 \
 --overwrite_output_dir
