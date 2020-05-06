@@ -152,10 +152,6 @@ def main():
         "0 (default value): dynamic loss scaling.\n"
         "Positive power of 2: static loss scaling value.\n")
     parser.add_argument(
-        "--use_crf",
-        action='store_true',
-        help="Set this flag if you are using an uncased model.")
-    parser.add_argument(
         '--server_ip',
         type=str,
         default='',
