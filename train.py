@@ -106,9 +106,6 @@ def fit(model, train_iter, eval_iter, num_train_optimization_steps, label_list, 
             for step, batch in enumerate(tqdm(train_iter, desc="Iteration")):
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, segment_ids, label_ids, valid_ids, label_mask = batch
-                print('device of input', input_ids.device)
-                print(device)
-                print(input_ids)
                 bert_out = model(input_ids, token_type_ids=segment_ids, attention_mask=input_mask, labels=label_ids, valid_ids=valid_ids, attention_label_mask=label_mask)
                 train_loss = model.loss_fn(bert_out, label_ids, label_mask)
                 if n_gpu > 1:
