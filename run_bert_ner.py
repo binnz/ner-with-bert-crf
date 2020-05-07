@@ -206,7 +206,7 @@ def main():
 
     eval_examples = data_processor.get_dev_examples(args.data_dir)
     eval_features = convert_examples_to_features(eval_examples,label_list,args.max_seq_length, tokenizer)
-    eval_iter = prepare_data_loader(eval_features,args, 'eval')
+    eval_iter = prepare_data_loader(eval_features, args, 'eval')
 
     # Prepare model
     if args.do_train:
@@ -219,4 +219,7 @@ def main():
     else:
         # Load a trained model and vocabulary that you have fine-tuned
         model = BertNer.from_pretrained(args.output_dir)
-        fit(model, train_iter, eval_iter, num_train_optimization_steps, label_list, args)
+        test_examples = data_processor.get_test_examples(args.data_dir)
+        test_features = convert_examples_to_features(test_examples, label_list, args.max_seq_length, tokenizer)
+        test_iter = prepare_data_loader(test_features, args, 'eval')
+        fit(model, None, test_iter, num_train_optimization_steps, label_list, args)

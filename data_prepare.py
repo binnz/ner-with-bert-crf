@@ -239,7 +239,7 @@ def prepare_data_loader(features, args, mode):
         else:
             sampler = DistributedSampler(data)
         return DataLoader(data, sampler=sampler, batch_size=args.train_batch_size)
-    elif mode == 'eval':
+    elif mode == 'eval' or mode == 'test':
         sampler = SequentialSampler(data)
         return DataLoader(data,sampler=sampler,batch_size=args.eval_batch_size)
     else:

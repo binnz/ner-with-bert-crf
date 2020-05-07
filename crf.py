@@ -8,14 +8,14 @@ import torch
 
 
 class CRF(nn.Module):
-    def __init__(self,num_tag, use_cuda=False):
+    def __init__(self,num_tag):
         if num_tag <= 0:
             raise ValueError("Invalid value of num_tag: %d" % num_tag)
         super(CRF, self).__init__()
         self.num_tag = num_tag
         self.start_tag = num_tag
         self.end_tag = num_tag + 1
-        self.use_cuda = use_cuda
+        self.use_cuda = torch.cuda.is_available()
         # 转移矩阵transitions：P_jk 表示从tag_j到tag_k的分数
         # P_j* 表示所有从tag_j出发的边
         # P_*k 表示所有到tag_k的边

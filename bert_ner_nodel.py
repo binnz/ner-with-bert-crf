@@ -11,6 +11,7 @@ class BertNer(BertPreTrainedModel):
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.classifier = nn.Linear(config.hidden_size, config.num_labels)
         self.crf = CRF(config.num_labels)
+        self.layer_weight = nn.Parameter(torch.Tensor(1, config.num_hidden_layers+1))
         self.init_weights()
 
     def forward(self,
@@ -23,6 +24,10 @@ class BertNer(BertPreTrainedModel):
         sequence_output, _, all_hidden_states = self.bert(
             input_ids, attention_mask, token_type_ids)
         batch_size, max_len, feat_dim = sequence_output.shape
+        weighted_sequence_output = torch.zeros_like(sequence_output)
+        for index, layer_states in enumerate(all_hidden_states):
+            weighted_sequence_output += layer_states * self.layer_weight[0][index]
+        sequence_output = weighted_sequence_output.to(sequence_output.device)
         valid_output = torch.zeros(
             batch_size, max_len, feat_dim, dtype=torch.float32)
         for i in range(batch_size):
